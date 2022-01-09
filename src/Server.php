@@ -150,7 +150,12 @@ class Server
             return;
         }
 
-        $app_key                                       = $match[1];
+        $app_key = $match[1];
+        if (!isset($this->appInfo[$app_key])) {
+            echo "Invalid app_key $app_key\n";
+            $connection->pauseRecv();
+            return;
+        }
         $socket_id                                     = $this->createsocketID($connection);
         $connection->appKey                            = $app_key;
         $connection->socketID                          = $socket_id;
