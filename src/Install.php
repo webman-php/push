@@ -26,7 +26,7 @@ class Install
             'APP_KEY_TO_REPLACE',
             'APP_SECRET_TO_REPLACE'
         ], [$app_key, $app_secret], $config_app_content);
-        file_put_contents($config_app_content, $config_app_path);
+        file_put_contents($config_app_path, $config_app_content);
         static::installByRelation();
     }
 
@@ -64,10 +64,14 @@ class Install
     public static function uninstallByRelation()
     {
         foreach (static::$pathRelation as $source => $dest) {
-            /*if (is_link(base_path()."/$dest")) {
-                unlink(base_path()."/$dest");
+            $path = base_path()."/$dest";
+            if (!is_dir($path) && !is_file($path)) {
+                continue;
+            }
+            /*if (is_link($path) {
+                unlink($path);
             }*/
-            remove_dir(base_path()."/$dest");
+            remove_dir($path);
         }
     }
 }
