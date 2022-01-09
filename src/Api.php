@@ -215,8 +215,6 @@ class Api
 
         if ($response['status'] === 200) {
             $response['result'] = json_decode($response['body'], true);
-        } else {
-            $response = false;
         }
 
         return $response;

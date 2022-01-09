@@ -8,9 +8,9 @@ class Install
     /**
      * @var array
      */
-    protected static $pathRelation = array (
-  'config/plugin/push' => 'config/plugin/push',
-);
+    protected static $pathRelation = [
+        'config/plugin/webman' => 'config/plugin/webman',
+    ];
 
     /**
      * Install
@@ -18,6 +18,15 @@ class Install
      */
     public static function install()
     {
+        $config_app_path = __DIR__ . '/config/plugin/webman/push/app.php';
+        $config_app_content = file_get_contents($config_app_path);
+        $app_key = md5(microtime(true).rand(0, 2100000000));
+        $app_secret = md5($app_key.rand(0, 2100000000));
+        $config_app_content = str_replace([
+            'APP_KEY_TO_REPLACE',
+            'APP_SECRET_TO_REPLACE'
+        ], [$app_key, $app_secret], $config_app_content);
+        file_put_contents($config_app_content, $config_app_path);
         static::installByRelation();
     }
 
