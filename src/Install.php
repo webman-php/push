@@ -9,7 +9,7 @@ class Install
      * @var array
      */
     protected static $pathRelation = [
-        'config/plugin/webman' => 'config/plugin/webman',
+        'config/plugin/webman/push' => 'config/plugin/webman/push'
     ];
 
     /**
