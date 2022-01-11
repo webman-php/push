@@ -292,7 +292,7 @@ class Server
                         'event'   => 'pusher_internal:subscription_succeeded',
                         'data'    => '{}',
                         'channel' => $channel
-                    )
+                    ), JSON_UNESCAPED_UNICODE
                 ));
                 return;
             // {"event":"pusher:unsubscribe","data":{"channel":"my-channel"}}
@@ -338,7 +338,7 @@ class Server
                 // @todo 检查是否设置了可前端发布事件
                 // {"event":"pusher:error","data":{"code":null,"message":"To send client events, you must enable this feature in the Settings page of your dashboard."}}
                 // 全局发布事件
-                $this->publishToClients($connection->appKey, $channel, $event, $data['data'], $connection->socketID);
+                $this->publishToClients($connection->appKey, $channel, $event, json_encode($data['data'], JSON_UNESCAPED_UNICODE), $connection->socketID);
         }
     }
 
@@ -367,7 +367,7 @@ class Server
      */
     protected function error($code, $message)
     {
-        return json_encode(array('event'=>'pusher:error', 'data' => array('code' => $code, 'message' => $message)));
+        return json_encode(array('event'=>'pusher:error', 'data' => array('code' => $code, 'message' => $message)), JSON_UNESCAPED_UNICODE);
     }
 
 
@@ -442,7 +442,7 @@ class Server
             $this->publishToClients($app_key, $channel, 'pusher_internal:member_added', json_encode(array(
                 'user_id' => $uid,
                 'user_info' => $user_info
-            )), $connection->socketID);
+            ), JSON_UNESCAPED_UNICODE), $connection->socketID);
         }
 
         // {"event":"pusher_internal:subscription_succeeded","data":"{\"presence\":{\"count\":2,\"ids\":[\"1488465780\",\"14884657802\"],\"hash\":{\"1488465780\":{\"name\":\"123\",\"sex\":\"1\"},\"14884657802\":{\"name\":\"123\",\"sex\":\"1\"}}}}","channel":"presence-channel"}
@@ -450,7 +450,7 @@ class Server
                 'event'   => 'pusher_internal:subscription_succeeded',
                 'data'    => json_encode($presence_data),
                 'channel' => $channel
-            )
+            ),JSON_UNESCAPED_UNICODE
         ));
     }
 
@@ -535,7 +535,7 @@ class Server
         }
         if ($member_removed) {
             // {"event":"pusher_internal:member_removed","data":"{\"user_id\":\"14884657801\"}","channel":"presence-channel"}
-            $this->publishToClients($app_key, $channel, 'pusher_internal:member_removed', json_encode(array('user_id'=>$uid)));
+            $this->publishToClients($app_key, $channel, 'pusher_internal:member_removed', json_encode(array('user_id'=>$uid), JSON_UNESCAPED_UNICODE));
         }
         unset($connection->channels[$channel], $this->_eventClients[$connection->appKey][$channel][$connection->socketID]);
     }
@@ -555,7 +555,7 @@ class Server
             'event'   => $event,
             'data'    => $data,
             'channel' => $channel
-        ));
+        ), JSON_UNESCAPED_UNICODE);
         foreach ($this->_eventClients[$app_key][$channel] as $connection) {
             if ($connection->socketID === $socket_id) {
                 continue;
@@ -690,7 +690,7 @@ class Server
                         $user_id_array[] = array('id' => $id);
                     }
 
-                    $connection->send(json_encode($user_id_array));
+                    $connection->send(json_encode($user_id_array), JSON_UNESCAPED_UNICODE);
                 }
                 // info
                 $info = explode(',', $request->get('info', ''));
@@ -710,7 +710,7 @@ class Server
                             break;
                     }
                 }
-                $connection->send(json_encode($channel_info));
+                $connection->send(json_encode($channel_info), JSON_UNESCAPED_UNICODE);
                 break;
             default:
                 return $connection->send(new Response(400, [], 'Bad Request'));
@@ -815,7 +815,7 @@ class Server
                 $this->sendHttpRequest($this->appInfo[$app_key]['user_hook'],
                     $app_key,
                     $this->appInfo[$app_key]['app_secret'],
-                    json_encode($http_events_body));
+                    json_encode($http_events_body), JSON_UNESCAPED_UNICODE);
             }
         }
 
@@ -849,7 +849,7 @@ class Server
                 $this->sendHttpRequest($this->appInfo[$app_key]['channel_hook'],
                     $app_key,
                     $this->appInfo[$app_key]['app_secret'],
-                    json_encode($http_events_body));
+                    json_encode($http_events_body), JSON_UNESCAPED_UNICODE);
             }
         }
     }
@@ -951,3 +951,4 @@ class Server
         return implode($separator, $string);
     }
 }
+
