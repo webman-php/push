@@ -118,10 +118,10 @@ class Server
      * @param string $socket_name
      * @param array $context
      */
-    public function __construct($api_listen, $appInfo)
+    public function __construct($api_listen, $app_info)
     {
         $this->apiListen = $api_listen;
-        $this->appInfo = $appInfo;
+        $this->appInfo = $app_info;
     }
 
     /**
