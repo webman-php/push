@@ -246,7 +246,7 @@ class Api
             $user_data['user_info'] = $user_info;
         }
 
-        return $this->socket_auth($channel, $socket_id, json_encode($user_data));
+        return $this->socketAuth($channel, $socket_id, json_encode($user_data));
     }
 }
 
