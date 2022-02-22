@@ -1,3 +1,3 @@
 # push
-webman push plugin  
+webman push plugin   
 https://www.workerman.net/plugin/2
