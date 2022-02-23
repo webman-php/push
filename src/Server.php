@@ -276,7 +276,7 @@ class Server
                 } elseif($channel_type === 'private') {
                     // {"event":"pusher:subscribe","data":{"auth":"b054014693241bcd9c26:10e3b628cb78e8bc4d1f44d47c9294551b446ae6ec10ef113d3d7e84e99763e6","channel_data":"{\"user_id\":100,\"user_info\":{\"name\":\"123\"}}","channel":"presence-channel"}}
                     $client_auth = $data['data']['auth'];
-                    $auth = $connection->appKey.':'.hash_hmac('sha256', $connection->socketID.':'.$channel, $this->appInfo[$connection->appKey]['app_secret'], false);
+                    $auth = $connection->appKey.':'.hash_hmac('sha256', $connection->socketID.':'.$channel.':'.$data['data']['channel_data'], $this->appInfo[$connection->appKey]['app_secret'], false);
                     // {"event":"pusher:error","data":{"code":null,"message":"Received invalid JSON"}}
                     if ($client_auth !== $auth) {
                         return $connection->send($this->error(null, 'Received invalid JSON '.$auth));
