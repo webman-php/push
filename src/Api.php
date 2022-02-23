@@ -8,11 +8,6 @@ namespace Webman\Push;
 class Api
 {
     /**
-     * @var string
-     */
-    protected $_apiAddress = 'http://127.0.0.1:3232';
-
-    /**
      * @var array
      */
     protected $_settings = [
@@ -61,7 +56,7 @@ class Api
         }
         $post_value = json_encode($post_params);
         $query_params['body_md5'] = md5($post_value);
-        $ch = $this->createCurl($this->_apiAddress, $s_url, 'POST', $query_params);
+        $ch = $this->createCurl($this->_settings['api_address'], $s_url, 'POST', $query_params);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_value);
         $response = $this->execCurl($ch);
         if ($response['status'] === 200) {
@@ -209,7 +204,7 @@ class Api
 
     public function get($path, $params = array())
     {
-        $ch = $this->createCurl($this->_apiAddress, $this->_settings['base_path'] . $path, 'GET', $params);
+        $ch = $this->createCurl($this->_settings['api_address'], $this->_settings['base_path'] . $path, 'GET', $params);
 
         $response = $this->execCurl($ch);
 
