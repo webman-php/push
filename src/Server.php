@@ -690,7 +690,7 @@ class Server
                         $user_id_array[] = array('id' => $id);
                     }
 
-                    $connection->send(json_encode($user_id_array), JSON_UNESCAPED_UNICODE);
+                    $connection->send(json_encode($user_id_array, JSON_UNESCAPED_UNICODE));
                 }
                 // info
                 $info = explode(',', $request->get('info', ''));
@@ -710,7 +710,7 @@ class Server
                             break;
                     }
                 }
-                $connection->send(json_encode($channel_info), JSON_UNESCAPED_UNICODE);
+                $connection->send(json_encode($channel_info, JSON_UNESCAPED_UNICODE));
                 break;
             default:
                 return $connection->send(new Response(400, [], 'Bad Request'));
@@ -815,7 +815,7 @@ class Server
                 $this->sendHttpRequest($this->appInfo[$app_key]['user_hook'],
                     $app_key,
                     $this->appInfo[$app_key]['app_secret'],
-                    json_encode($http_events_body), JSON_UNESCAPED_UNICODE);
+                    json_encode($http_events_body, JSON_UNESCAPED_UNICODE));
             }
         }
 
@@ -849,7 +849,7 @@ class Server
                 $this->sendHttpRequest($this->appInfo[$app_key]['channel_hook'],
                     $app_key,
                     $this->appInfo[$app_key]['app_secret'],
-                    json_encode($http_events_body), JSON_UNESCAPED_UNICODE);
+                    json_encode($http_events_body, JSON_UNESCAPED_UNICODE));
             }
         }
     }
