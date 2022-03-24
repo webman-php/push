@@ -27,7 +27,7 @@ Route::any('/plugin/webman/push/push.js', function (Request $request) {
  * 私有频道鉴权，这里应该使用session辨别当前用户身份，然后确定该用户是否有权限监听channel_name
  */
 Route::any(config('plugin.webman.push.app.auth'), function (Request $request) {
-    $pusher = new Api(config('plugin.webman.push.app.api'), config('plugin.webman.push.app.app_key'), config('plugin.webman.push.app.app_secret'));
+    $pusher = new Api(str_replace('0.0.0.0', '127.0.0.1', config('plugin.webman.push.app.api')), config('plugin.webman.push.app.app_key'), config('plugin.webman.push.app.app_secret'));
     $channel_name = $request->post('channel_name');
     $session = $request->session();
     // 这里应该通过session和channel_name判断当前用户是否有权限监听channel_name
