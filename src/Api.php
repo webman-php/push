@@ -33,7 +33,7 @@ class Api
      * trigger an event by providing event name and payload.
      * Optionally provide a socket ID to exclude a client (most likely the sender).
      *
-     * @param array $channels An array of channel names to publish the event on.
+     * @param array|string $channels An array of channel names to publish the event on.
      * @param string $event
      * @param mixed $data Event data
      * @param string $socket_id [optional]
@@ -83,17 +83,7 @@ class Api
 
     public function getChannels($params = array())
     {
-        throw new PushException('getChannels is not implemented');
-        $response = $this->get('/channels', $params);
-
-        if ($response['status'] === 200) {
-            $response = json_decode($response['body']);
-            $response->channels = get_object_vars($response->channels);
-        } else {
-            $response = false;
-        }
-
-        return $response;
+        return $this->get('/channels', $params);
     }
 
     private function checkCompatibility()
