@@ -674,8 +674,24 @@ class Server
                 }
                 return $connection->send('{}');
             case 'channels':
+                // info
+                $request_info = explode(',', $request->get('info', ''));
                 if (!isset($explode[3])) {
-                    return $connection->send(new Response(400, [], 'Bad Request'));
+                    $channels = [];
+                    $prefix = $request->get('filter_by_prefix');
+                    $return_subscription_count = in_array('subscription_count', $request_info);
+                    foreach ($this->_globalData[$app_key] ?? [] as $channel => $item) {
+                        if ($prefix !== null) {
+                            if (strpos($channel, $prefix) !== 0) {
+                                continue;
+                            }
+                        }
+                        $channels[$channel] = [];
+                        if ($return_subscription_count) {
+                            $channels[$channel]['subscription_count'] = $item['subscription_count'];
+                        }
+                    }
+                    return $connection->send(json_encode(['channels' => $channels], JSON_UNESCAPED_UNICODE));
                 }
                 $channel = $explode[3];
                 // users
@@ -692,16 +708,14 @@ class Server
 
                     $connection->send(json_encode($user_id_array, JSON_UNESCAPED_UNICODE));
                 }
-                // info
-                $info = explode(',', $request->get('info', ''));
                 $occupied = isset($this->_globalData[$app_key][$channel]);
                 $user_count = isset($this->_globalData[$app_key][$channel]['users']) ? count($this->_globalData[$app_key][$channel]['users']) : 0;
                 $subscription_count = $occupied ? $this->_globalData[$app_key][$channel]['subscription_count'] : 0;
                 $channel_info = array(
                     'occupied' => $occupied
                 );
-                foreach ($info as $item) {
-                    switch ($item) {
+                foreach ($request_info as $name) {
+                    switch ($name) {
                         case 'user_count':
                             $channel_info['user_count'] = $user_count;
                             break;
