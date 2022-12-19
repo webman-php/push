@@ -240,6 +240,10 @@ class Server
         if (!$data) {
             return;
         }
+        if (!isset($data['event'])) {
+            $connection->send($this->error(null, 'Empty event'));
+            return;
+        }
         $event = $data['event'];
         switch ($event) {
             case 'pusher:ping':
@@ -262,7 +266,7 @@ class Server
 
                     // {"event":"pusher:error","data":{"code":null,"message":"Received invalid JSON"}}
                     if ($client_auth !== $auth) {
-                        return $connection->send($this->error(null, 'Received invalid JSON '.$auth));
+                        return $connection->send($this->error(null, 'Received invalid Auth '.$auth));
                     }
                     $user_data = json_decode($data['data']['channel_data'], true);
                     if (!$user_data || !isset($user_data['user_id']) || !isset($user_data['user_info'])) {
@@ -277,9 +281,9 @@ class Server
                     // {"event":"pusher:subscribe","data":{"auth":"b054014693241bcd9c26:10e3b628cb78e8bc4d1f44d47c9294551b446ae6ec10ef113d3d7e84e99763e6","channel_data":"{\"user_id\":100,\"user_info\":{\"name\":\"123\"}}","channel":"presence-channel"}}
                     $client_auth = $data['data']['auth'];
                     $auth = $connection->appKey.':'.hash_hmac('sha256', $connection->socketID.':'.$channel, $this->appInfo[$connection->appKey]['app_secret'], false);
-                    // {"event":"pusher:error","data":{"code":null,"message":"Received invalid JSON"}}
+                    // {"event":"pusher:error","data":{"code":null,"message":"Received invalid Auth"}}
                     if ($client_auth !== $auth) {
-                        return $connection->send($this->error(null, 'Received invalid JSON '.$auth));
+                        return $connection->send($this->error(null, 'Received invalid Auth '.$auth));
                     }
                     $this->subscribePrivateChannel($connection, $channel);
                 } else {
@@ -318,6 +322,10 @@ class Server
             default:
                 if (strpos($event, 'pusher:') === 0) {
                     return $connection->send($this->error(null, 'Unknown event'));
+                }
+                if (!isset($data['channel'])) {
+                    $connection->send($this->error(null, 'Empty channel'));
+                    return;
                 }
                 $channel = $data['channel'];
                 // 客户端触发事件必须是private 或者 presence的channel
