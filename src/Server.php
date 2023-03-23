@@ -29,7 +29,7 @@ class Server
      *
      * @var array
      */
-    public $appInfo = array();
+    public $appInfo = [];
 
     /**
      * 心跳时间
@@ -158,7 +158,7 @@ class Server
     public function onWebSocketConnect(TcpConnection $connection, $header)
     {
         // /app/1234567890abcdefghig?protocol=7&client=js&version=3.2.4&flash=false
-        if (!preg_match('/ \/app\/([^\/^\?^ ]+)/', (string)$header, $match)) {
+        if (!preg_match('/\/app\/([^\/^\?^ ]+)/', (string)$header, $match)) {
             echo "app_key not found\n$header\n";
             $connection->pauseRecv();
             return;
