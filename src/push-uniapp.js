@@ -190,11 +190,13 @@ function createPresenceChannel(channel_name, push)
 }
 
 uni.onNetworkStatusChange(function (res) {
-    for (var i in Push.instances) {
-        con = Push.instances[i].connection;
-        con.reconnectInterval = 1;
-        if (con.state === 'connecting') {
-            con.connect();
+    if(res.isConnected) {
+        for (var i in Push.instances) {
+            con = Push.instances[i].connection;
+            con.reconnectInterval = 1;
+            if (con.state === 'connecting') {
+                con.connect();
+            }
         }
     }
 });
