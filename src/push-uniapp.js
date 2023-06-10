@@ -189,8 +189,7 @@ function createPresenceChannel(channel_name, push)
     return createPrivateChannel(channel_name, push);
 }
 
-/*window.addEventListener('online',  function(){
-    var con;
+uni.onNetworkStatusChange(function (res) {
     for (var i in Push.instances) {
         con = Push.instances[i].connection;
         con.reconnectInterval = 1;
@@ -198,8 +197,7 @@ function createPresenceChannel(channel_name, push)
             con.connect();
         }
     }
-});*/
-
+});
 
 function Connection(options) {
     this.dispatcher = new Dispatcher();
