@@ -83,7 +83,7 @@ Push.prototype.createConnection = function () {
             }
             if (event === 'pusher:connection_established') {
                 _this.connection.socket_id = data.socket_id;
-                _this.connection.state = 'connected';
+                _this.connection.updateNetworkState('connected');
                 _this.subscribeAll();
             }
             if (event.indexOf('pusher_internal') !== -1) {
