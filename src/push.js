@@ -15,7 +15,9 @@ function Push(options) {
 
 Push.prototype.checkoutPing = function() {
     var _this = this;
-    setTimeout(function () {
+    _this.checkoutPingTimer && clearTimeout(_this.checkoutPingTimer);
+    _this.checkoutPingTimer = setTimeout(function () {
+        _this.checkoutPingTimer = 0;
         if (_this.connection.state === 'connected') {
             _this.connection.send('{"event":"pusher:ping","data":{}}');
             if (_this.pingTimeoutTimer) {
