@@ -160,6 +160,7 @@ function createChannel(channel_name, push) {
     channel.subscribeCb = function () {
         push.connection.send(JSON.stringify({ event: "pusher:subscribe", data: { channel: channel_name } }));
     }
+    channel.processSubscribe();
     return channel;
 }
 
