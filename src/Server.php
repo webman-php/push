@@ -509,9 +509,11 @@ class Server
     public function unsubscribePublicChannel($connection, $channel)
     {
         $app_key = $connection->appKey;
-        $this->_globalData[$app_key][$channel]['subscription_count']--;
-        if ($this->_globalData[$app_key][$channel]['subscription_count'] <= 0) {
-            unset($this->_globalData[$app_key][$channel]);
+        if (isset($this->_globalData[$app_key][$channel])) {
+            $this->_globalData[$app_key][$channel]['subscription_count']--;
+            if ($this->_globalData[$app_key][$channel]['subscription_count'] <= 0) {
+                unset($this->_globalData[$app_key][$channel]);
+            }
         }
         unset($connection->channels[$channel], $this->_eventClients[$connection->appKey][$channel][$connection->socketID]);
     }
@@ -541,25 +543,27 @@ class Server
     {
         $app_key = $connection->appKey;
         $member_removed = false;
-        $this->_globalData[$app_key][$channel]['subscription_count']--;
-        if ($this->_globalData[$app_key][$channel]['subscription_count'] <= 0) {
-            unset($this->_globalData[$app_key][$channel]);
-            $member_removed = true;
-        } else {
-            if (!isset($this->_globalData[$app_key][$channel]['users'][$uid]['ref_count'])) {
-                error_log("\$this->_globalData[$app_key][$channel]['users'][$uid]['ref_count'] not exist\n");
-                return;
-            }
-            $this->_globalData[$app_key][$channel]['users'][$uid]['ref_count']--;
-            $ref_count = $this->_globalData[$app_key][$channel]['users'][$uid]['ref_count'];
-            if ($ref_count <= 0) {
-                unset($this->_globalData[$app_key][$channel]['users'][$uid]);
+        if (isset($this->_globalData[$app_key][$channel])) {
+            $this->_globalData[$app_key][$channel]['subscription_count']--;
+            if ($this->_globalData[$app_key][$channel]['subscription_count'] <= 0) {
+                unset($this->_globalData[$app_key][$channel]);
                 $member_removed = true;
+            } else {
+                if (!isset($this->_globalData[$app_key][$channel]['users'][$uid]['ref_count'])) {
+                    error_log("\$this->_globalData[$app_key][$channel]['users'][$uid]['ref_count'] not exist\n");
+                    return;
+                }
+                $this->_globalData[$app_key][$channel]['users'][$uid]['ref_count']--;
+                $ref_count = $this->_globalData[$app_key][$channel]['users'][$uid]['ref_count'];
+                if ($ref_count <= 0) {
+                    unset($this->_globalData[$app_key][$channel]['users'][$uid]);
+                    $member_removed = true;
+                }
             }
-        }
-        if ($member_removed) {
-            // {"event":"pusher_internal:member_removed","data":"{\"user_id\":\"14884657801\"}","channel":"presence-channel"}
-            $this->publishToClients($app_key, $channel, 'pusher_internal:member_removed', json_encode(array('user_id' => $uid), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            if ($member_removed) {
+                // {"event":"pusher_internal:member_removed","data":"{\"user_id\":\"14884657801\"}","channel":"presence-channel"}
+                $this->publishToClients($app_key, $channel, 'pusher_internal:member_removed', json_encode(array('user_id' => $uid), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            }
         }
         unset($connection->channels[$channel], $this->_eventClients[$connection->appKey][$channel][$connection->socketID]);
     }
